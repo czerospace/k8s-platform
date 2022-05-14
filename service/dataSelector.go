@@ -110,12 +110,12 @@ func (d *dataSelector) Paginate() *dataSelector {
 	// page 是 2，startIndex 是 10，endIndex 是 19
 	// page 是 3，startIndex 是 20，endIndex 是 25
 	startIndex := limit * (page - 1)
-	endIndex := limit*page - 1
+	endIndex := limit * page
 	// 处理最后一页 endIndex
 	if endIndex > len(d.GenericDataList) {
-		endIndex = len(d.GenericDataList) - 1
+		endIndex = len(d.GenericDataList)
 	}
-	d.GenericDataList = d.GenericDataList[startIndex : endIndex+1]
+	d.GenericDataList = d.GenericDataList[startIndex:endIndex]
 	return d
 }
 
