@@ -48,3 +48,164 @@ func (p *pod) GetPods(ctx *gin.Context) {
 		"data": data,
 	})
 }
+
+// GetPodDetail 获取 Pod 详情
+func (p *pod) GetPodDetail(ctx *gin.Context) {
+	params := new(struct {
+		PodName   string `form:"pod_name"`
+		Namespace string `form:"namespace"`
+	})
+	if err := ctx.Bind(params); err != nil {
+		logger.Error("Bind请求参数失败: " + err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	data, err := service.Pod.GetPodDetail(params.PodName, params.Namespace)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "获取Pod详情成功",
+		"data": data,
+	})
+}
+
+// DeletePod 删除 Pod
+func (p *pod) DeletePod(ctx *gin.Context) {
+	params := new(struct {
+		PodName   string `json:"pod_name"`
+		Namespace string `json:"namespace"`
+	})
+	// DELETE 请求，绑定参数方法改为 ctx.ShouldBindJSON
+	if err := ctx.ShouldBindJSON(params); err != nil {
+		logger.Error("Bind请求参数失败: " + err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	err := service.Pod.DeletePod(params.PodName, params.Namespace)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "删除Pod成功",
+		"data": nil,
+	})
+}
+
+// UpdatePod 更新 Pod
+func (p *pod) UpdatePod(ctx *gin.Context) {
+	params := new(struct {
+		PodName   string `json:"pod_name"`
+		Namespace string `json:"namespace"`
+		Content   string `json:"content"`
+	})
+	// PUT 请求，绑定参数方法改为 ctx.ShouldBindJSON
+	if err := ctx.ShouldBindJSON(params); err != nil {
+		logger.Error("Bind请求参数失败: " + err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	err := service.Pod.UpdatePod(params.PodName, params.Namespace, params.Content)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "删除Pod成功",
+		"data": nil,
+	})
+}
+
+// GetPodContainer 获取 Pod 容器
+func (p *pod) GetPodContainer(ctx *gin.Context) {
+	params := new(struct {
+		PodName   string `form:"pod_name"`
+		Namespace string `form:"namespace"`
+	})
+	// Get 请求，绑定参数方法为 ctx.Bind
+	if err := ctx.Bind(params); err != nil {
+		logger.Error("Bind请求参数失败: " + err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	data, err := service.Pod.GetPodContainer(params.PodName, params.Namespace)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "获取Pod容器成功",
+		"data": data,
+	})
+}
+
+// GetPodLog 获取 Pod 中的日志
+func (p *pod) GetPodLog(ctx *gin.Context) {
+	params := new(struct {
+		ContainerName string `form:"container_name"`
+		PodName       string `form:"pod_name"`
+		Namespace     string `form:"namespace"`
+	})
+	if err := ctx.Bind(params); err != nil {
+		logger.Error("Bind请求参数失败: " + err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	data, err := service.Pod.GetPodLog(params.ContainerName, params.PodName, params.Namespace)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "获取Pod中容器日志成功",
+		"data": data,
+	})
+}
+
+// GetPodNumPerNp 获取每个 namespace 的 pod 数量
+func (p *pod) GetPodNumPerNp(ctx *gin.Context) {
+	data, err := service.Pod.GetPodNumPerNp()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "获取每个namespace的pod数量成功",
+		"data": data,
+	})
+}
